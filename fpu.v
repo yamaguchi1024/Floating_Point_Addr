@@ -1,5 +1,5 @@
 // さのくん
-module naosu(
+module normalize(
     input [31:0] kekka,
     output [31:0] res
 );
@@ -28,7 +28,7 @@ wire [31:0] kekka;
 
 // outputは、足し算した結果を23bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 
-aosu naosu(.kekka(kekka), .res(res));
+normalize normalize(.kekka(kekka), .res(res));
 
 endmodule
 
