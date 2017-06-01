@@ -1,23 +1,34 @@
-
-// test
 // さのくん
 module naosu(
+    input [31:0] kekka,
+    output [31:0] res
 );
 // 正規化などをする
+
+
+// 最終的にはこういう感じでresに代入する
+assign res = hoge;
 
 endmodule
 
 // 盛くん
 module add(
+    input [26:0] lar,
+    input [26:0] sma,
+    input oror,
+    output [31:0] res
 );
 
+wire [31:0] kekka;
+
 // 普通に足し算
+// 丸めもする
 
 // 一緒だったらー
 
 // outputは、足し算した結果を23bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 
-naosu();
+aosu naosu(.kekka(kekka), .res(res));
 
 endmodule
 
