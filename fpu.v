@@ -48,13 +48,13 @@ wire [26:0] lar;
 wire [26:0] sma;
 
 // 00を追加
-assign n = {l[22:0],2'b00};
-assign m = {s[22:0],2'b00};
+assign lar = (|l==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
+assign sma = (|s==1'b0) ? {1'b0,s[22:0],2'b00} : {1'b1,s[22:0],2'b00};
 
-wire [128:0] o;
+wire [256:0] o;
 
 // 小さい方をシフト
-assign o = k >> d;
+assign o = sma >> d;
 
 assign watasu = o[22:0];
 assign orwotoru = 
