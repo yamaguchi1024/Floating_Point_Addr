@@ -44,22 +44,36 @@ module calladd(
 );
 
 // 符号を付け加える
+wire [26:0] la;
+wire [300:0] sm;
+
+// 00を追加
+assign la = (|l==1'b0) ? {2'b00,l[22:0],2'b00} : {2'b01,l[22:0],2'b00};
+assign sm = (|s==1'b0) ? {2'b00,s[22:0],276'b0} : {2'b01,s[22:0],276'b0};
+
+wire [300:0] shiftsm;
+wire orwotoru;
+
+// 小さい方をシフト
+assign shiftsm = sm >> d;
+assign orwotoru = |sm[273:0];
+
 wire [26:0] lar;
 wire [26:0] sma;
 
-// 00を追加
-assign lar = (|l==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
-assign sma = (|s==1'b0) ? {1'b0,s[22:0],2'b00} : {1'b1,s[22:0],2'b00};
-
-wire [256:0] o;
-
-// 小さい方をシフト
-assign o = sma >> d;
-
-assign watasu = o[22:0];
-assign orwotoru = 
-
 // 負の数を補数に変換
+always @(L or S or la or shiftsm) begin
+	if(L==1'b1) begin
+		lar <= ~l + 1'b1;
+	end else begin
+		lar <= l;
+	end
+	if(S==1'b1) begin
+		sma <=(~sm[300:274]) + 1'b1;
+	end else begin
+		sma <= sm[300:274];
+	end
+end
 
 add add(.lar(lar), .sma(sma), .oror(oror) .res(res) )
 endmodule
