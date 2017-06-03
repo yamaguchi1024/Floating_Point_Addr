@@ -43,11 +43,10 @@ module calladd(
     output [31:0] res
 );
 
-// 符号を付け加える
 wire [26:0] la;
 wire [300:0] sm;
 
-// 00を追加
+// 上下2bit拡張
 assign la = (|l==1'b0) ? {2'b00,l[22:0],2'b00} : {2'b01,l[22:0],2'b00};
 assign sm = (|s==1'b0) ? {2'b00,s[22:0],276'b0} : {2'b01,s[22:0],276'b0};
 
@@ -61,7 +60,7 @@ assign orwotoru = |sm[273:0];
 wire [26:0] lar;
 wire [26:0] sma;
 
-// 負の数を補数に変換
+// 負の数ならば補数に変換
 always @(L or S or la or shiftsm) begin
 	if(L==1'b1) begin
 		lar <= ~l + 1'b1;
