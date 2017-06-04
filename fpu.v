@@ -7,15 +7,62 @@ module naosu(
 endmodule
 
 // 盛くん
+
+//Large_n =>でかい方の数,Small_n=>小さい方の数,bit_r =>シフトで消えるビットのor
+//sum_rnd => 結果
 module add(
+	input [25:0] Large_n,
+	input [25:0] Small_n,
+	input bit_r,
+	output [24:0] sum_rnd
 );
 
-// 普通に足し算
 
-// 一緒だったらー
+	wire [26:0] sum;
+	wire [3:0] ulps;
 
-// outputは、足し算した結果を23bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
+// 普通に足し算 符号拡張法
+//ulps={sumの下位2ビット,large_nの符号,bit_r}
 
+	assign sum ={Large_n[25],Large_n}+{Small_n[25],Small_n};
+	assign ulps ={sum[1:0],Large_n[25],bit_r}
+
+// 場合分け
+	always_comb begin
+		case(ulps)
+	//結果が正
+		//0.1ulp未満=>切り捨て
+			2'b0000:sum_rnd=sum[25:1];
+			2'b0001:sum_rnd=sum[25:1];
+			2'b1000:sum_rnd=sum[25:1];
+			2'b1001:sum_rnd=sum[25:1];
+		//0.1ulp=>切り捨て ラウンドイーブン
+			2'b0100:sum_rnd=sum[25:1];
+		//0.1ulp=>切り上げ ラウンドイーブン
+			2'b1100:sum_rnd=sum[25:1]+1;
+		//0.1ulp以上=>切り上げ
+			2'b0101:sum_rnd=sum[25:1]+1;
+			2'b1101:sum_rnd=sum[25:1]+1;
+	//結果が負
+		//0.1ulp未満=>切り捨て
+			2'b0010:sum_rnd=sum[25:1];
+			2'b0011:sum_rnd=sum[25:1];
+			2'b1010:sum_rnd=sum[25:1];
+			2'b1011:sum_rnd=sum[25:1];
+		//0.1ulp=>切り捨て ラウンドイーブン
+			2'b0110:sum_rnd=sum[25:1];
+		//0.1ulp=>切り上げ ラウンドイーブン
+			2'b1110:sum_rnd=sum[25:1]-1;
+		//0.1ulp以上=>切り上げ
+			2'b0111:sum_rnd=sum[25:1]-1;
+			2'b1111:sum_rnd=sum[25:1]-1;
+		endcase
+	end
+	
+		
+
+// outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
+//正規化はまだ考えていない by 盛
 naosu();
 
 endmodule
@@ -48,8 +95,8 @@ assign watasu = o[22:0];
 assign orwotoru = 
 
 // 負の数を補数に変換
-
-add add(.lar(lar), .sma(sma), .oror(oror) .res(res) )
+//代入先の引数名を変更　by 盛
+add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .sum_rnd(res) )
 endmodule
 
 module compare(
