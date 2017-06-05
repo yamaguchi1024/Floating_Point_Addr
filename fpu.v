@@ -1,8 +1,13 @@
-
 // さのくん
-module naosu(
+module normalize(
+    input [31:0] kekka,
+    output [31:0] res
 );
 // 正規化などをする
+
+
+// 最終的にはこういう感じでresに代入する
+assign res = hoge;
 
 endmodule
 
@@ -64,6 +69,7 @@ module add(
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
 naosu();
+
 
 endmodule
 
