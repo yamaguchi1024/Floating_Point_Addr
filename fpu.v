@@ -84,25 +84,39 @@ module calladd(
     output [31:0] res
 );
 
-// 符号を付け加える
+wire [26:0] la;
+wire [300:0] sm;
+
+// 上下2bit拡張
+assign la = (|l==1'b0) ? {2'b00,l[22:0],2'b00} : {2'b01,l[22:0],2'b00};
+assign sm = (|s==1'b0) ? {2'b00,s[22:0],276'b0} : {2'b01,s[22:0],276'b0};
+
+wire [300:0] shiftsm;
+wire orwotoru;
+
+// 小さい方をシフト
+assign shiftsm = sm >> d;
+assign orwotoru = |sm[273:0];
+
 wire [26:0] lar;
 wire [26:0] sma;
 
-// 00を追加
-assign n = {l[22:0],2'b00};
-assign m = {s[22:0],2'b00};
+// 負の数ならば補数に変換
+always @(L or S or la or shiftsm) begin
+	if(L==1'b1) begin
+		lar <= ~l + 1'b1;
+	end else begin
+		lar <= l;
+	end
+	if(S==1'b1) begin
+		sma <=(~sm[300:274]) + 1'b1;
+	end else begin
+		sma <= sm[300:274];
+	end
+end
 
-wire [128:0] o;
+add add(.lar(lar), .sma(sma), .oror(oror) .res(res) )
 
-// 小さい方をシフト
-assign o = k >> d;
-
-assign watasu = o[22:0];
-assign orwotoru = 
-
-// 負の数を補数に変換
-//代入先の引数名を変更　by 盛
-add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .sum_rnd(res) )
 endmodule
 
 module compare(
