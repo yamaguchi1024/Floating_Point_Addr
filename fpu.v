@@ -153,22 +153,22 @@ module calladd(
 	output [31:0] res
 );
 
-wire [26:0] la;
+wire [25:0] la;
 wire [300:0] sm;
 
 // 上下2bit拡張
-assign la = (|l==1'b0) ? {2'b00,l[22:0],2'b00} : {2'b01,l[22:0],2'b00};
-assign sm = (|s==1'b0) ? {2'b00,s[22:0],276'b0} : {2'b01,s[22:0],276'b0};
+assign la = (|l==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
+assign sm = (|s==1'b0) ? {1'b0,s[22:0],277'b0} : {1'b1,s[22:0],277'b0};
 
 wire [300:0] shiftsm;
 wire oror;
 
 // 小さい方をシフト
 assign shiftsm = sm >> d;
-assign oror = |sm[273:0];
+assign oror = |sm[274:0];
 
-wire [26:0] lar;
-wire [26:0] sma;
+wire [25:0] lar;
+wire [25:0] sma;
 
 // 負の数ならば補数に変換
 always @(L or S or la or shiftsm) begin
@@ -185,6 +185,8 @@ always @(L or S or la or shiftsm) begin
 end
 
 add add(.lar(lar), .sma(sma), .oror(oror) .res(res) )
+
+//非正規数の対処はまだできてないです
 
 endmodule
 
