@@ -73,16 +73,13 @@ always @(number, u) begin
 
 	end
 
-
-
-
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
 
 endmodule
 
-// 盛くん
 
+// 盛くん
 //Large_n =>でかい方の数,Small_n=>小さい方の数,bit_r =>シフトで消えるビットのor
 //sum_rnd => 結果
 module add(
