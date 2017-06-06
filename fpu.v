@@ -86,7 +86,7 @@ module add(
 	input [25:0] Large_n,
 	input [25:0] Small_n,
 	input bit_r,
-	input e,
+	input [7:0] e,
 	output [31:0] res
 );
 
@@ -149,7 +149,7 @@ module calladd(
 	input L,
 	input S,
 	input [7:0] d,
-	input [30:23] e,
+	input [7:0] e,
 	output [31:0] res
 );
 
@@ -203,7 +203,7 @@ wire [30:0] s,
 wire L,
 wire S,
 wire [31:0] d;
-wire [30:23] e;
+wire [7:0] e;
 
 always_comb begin
 if (a[30:23] !== b[30:23]) begin
