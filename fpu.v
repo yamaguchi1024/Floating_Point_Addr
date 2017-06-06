@@ -184,7 +184,7 @@ always @(L or S or la or shiftsm) begin
 	end
 end
 
-add add(.lar(lar), .sma(sma), .oror(oror) .res(res) .e(e) )
+add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .e(e) .res(res) )
 
 //非正規数の対処はまだできてないです
 
