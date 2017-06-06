@@ -150,7 +150,6 @@ module calladd(
 	input L,
 	input S,
 	input [7:0] d,
-	input oror,
 	output [31:0] res
 );
 
@@ -162,11 +161,11 @@ assign la = (|l==1'b0) ? {2'b00,l[22:0],2'b00} : {2'b01,l[22:0],2'b00};
 assign sm = (|s==1'b0) ? {2'b00,s[22:0],276'b0} : {2'b01,s[22:0],276'b0};
 
 wire [300:0] shiftsm;
-wire orwotoru;
+wire oror;
 
 // 小さい方をシフト
 assign shiftsm = sm >> d;
-assign orwotoru = |sm[273:0];
+assign oror = |sm[273:0];
 
 wire [26:0] lar;
 wire [26:0] sma;
@@ -189,18 +188,20 @@ add add(.lar(lar), .sma(sma), .oror(oror) .res(res) )
 
 endmodule
 
-module compare(
+
+// Main
+module mainmodule(
 	input [31:0] a,
 	input [31:0] b,
 	output [31:0] res
 );
 
 wire [30:0] l,
-	wire [30:0] s,
-	wire L,
-	wire S,
-	wire [31:0] d;
-wire oror;
+wire [30:0] s,
+wire L,
+wire S,
+wire [31:0] d;
+
 if (a[30:23] > b[30:23]) begin
 	assign l = a[30:0];
 	assign s = b[30:0];
@@ -238,5 +239,5 @@ else if (a[22:0] == b[22:0]) begin
 	assign d = a[30:23] - b[30:23]
 end 
 
-calladd calladd(.oror(oror), .l(l), .s(s), .L(L), .S(S), .d(d), .res(res))
+calladd calladd( .l(l), .s(s), .L(L), .S(S), .d(d), .res(res))
 endmodule
