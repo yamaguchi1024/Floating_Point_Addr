@@ -1,6 +1,6 @@
 // さのくん
 module normalize(
-    input [24:0] kekka,
+    input [24:0] sum_rnd,
     input [7:0] e,
     output [31:0] res
 );
@@ -15,13 +15,13 @@ module normalize(
 
 // 補数ならば２進に直す
 
-always @(kekka, e) begin
+always @(sum_rnd, e) begin
 
-	if (kekka[24] == 1'b1) begin
-		number[24:0] <= {1'b1, ((~kekka[23:0]) + 1'b1)}; // ~はビット反転（たぶん）
+	if (sum_rnd[24] == 1'b1) begin
+		number[24:0] <= {1'b1, ((~sum_rnd[23:0]) + 1'b1)}; // ~はビット反転（たぶん）
 		//補数を２進に直してnumberに入れた
 	end else begin
-		number <= kekka[24:0];
+		number <= sum_rnd[24:0];
 	end
 end
 
@@ -86,12 +86,14 @@ module add(
 	input [25:0] Large_n,
 	input [25:0] Small_n,
 	input bit_r,
-	output [24:0] sum_rnd
+	input e,
+	output [31:0] res
 );
 
 
 wire [26:0] sum;
 wire [3:0] ulps;
+wire [24:0] sum_rnd
 
 // 普通に足し算 符号拡張法
 //ulps={sumの下位2ビット,large_nの符号,bit_r}
@@ -135,7 +137,7 @@ end
 
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
-naosu();
+normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) )
 
 
 endmodule
@@ -147,6 +149,7 @@ module calladd(
 	input L,
 	input S,
 	input [7:0] d,
+	input [30:23] e,
 	output [31:0] res
 );
 
@@ -181,7 +184,7 @@ always @(L or S or la or shiftsm) begin
 	end
 end
 
-add add(.lar(lar), .sma(sma), .oror(oror) .res(res) )
+add add(.lar(lar), .sma(sma), .oror(oror) .res(res) .e(e) )
 
 endmodule
 
@@ -198,6 +201,7 @@ wire [30:0] s,
 wire L,
 wire S,
 wire [31:0] d;
+wire [30:23] e;
 
 always_comb begin
 if (a[30:23] !== b[30:23]) begin
@@ -206,6 +210,7 @@ if (a[30:23] !== b[30:23]) begin
 	assign L = (a[30:23] > b[30:23]) ? a[31] : b[31] ;
 	assign S = (a[30:23] > b[30:23]) ? b[31] : a[31] ;
 	assign d = (a[30:23] > b[30:23]) ? a[30:23] - b[30:23] : b[30:23] - a[30:23];
+	assign e = (a[30:23] > b[30:23]) ? a[30:23] : b[30:23] ;
 
 else if(a[22:0] > b[22:0]) begin
 	assign l = a[30:0];
@@ -213,6 +218,7 @@ else if(a[22:0] > b[22:0]) begin
 	assign L = a[31];
 	assign S = b[31];
 	assign d = a[30:23] - b[30:23];
+    assign e = a[30:23];
 
 else if (a[22:0] < b[22:0]) begin
 	assign l = b[30:0];
@@ -220,6 +226,7 @@ else if (a[22:0] < b[22:0]) begin
 	assign L = b[31];
 	assign S = a[31];
 	assign d = b[30:23] - a[30:23];
+    assign e = b[30:23];
 
 // ここは適当
 else if (a[22:0] == b[22:0]) begin
@@ -228,7 +235,8 @@ else if (a[22:0] == b[22:0]) begin
 	assign L = b[31];
 	assign S = a[31];
 	assign d = a[30:23] - b[30:23];
+    assign e = a[30:23];
 end 
 
-calladd calladd( .l(l), .s(s), .L(L), .S(S), .d(d), .res(res))
+calladd calladd( .l(l), .s(s), .L(L), .S(S), .d(d), .res(res). e(e) )
 endmodule
