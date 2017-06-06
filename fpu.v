@@ -178,9 +178,9 @@ always @(L or S or la or shiftsm) begin
 		lar <= l;
 	end
 	if(S==1'b1) begin
-		sma <=(~sm[300:274]) + 1'b1;
+		sma <=(~sm[300:275]) + 1'b1;
 	end else begin
-		sma <= sm[300:274];
+		sma <= sm[300:275];
 	end
 end
 
