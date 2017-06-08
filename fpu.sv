@@ -131,38 +131,39 @@ endmodule
 
 // 阪本くん担当
 module calladd(
-	input [30:0] l,
-	input [30:0] s,
-	input L,
-	input S,
-	input [7:0] d,
-	input [7:0] e,
+	input [30:0] Large,
+	input [30:0] Small,
+	input Large_sign,
+	input Small_sign,
+	input [7:0] Shift_n,
+	input [7:0] Large_e,
+	input [7:0] Small_e,
 	output [31:0] res
 );
 
-wire [25:0] la;
-wire [300:0] sm;
+wire [25:0] Large2;
+wire [300:0] Small2;
 
 // 上下2bit拡張
-assign la = (|e==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
-assign sm = (|s==1'b0) ? {1'b0,s[22:0],277'b0} : {1'b1,s[22:0],277'b0};
+assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],2'b00} : {1'b1,Large[22:0],2'b00};
+assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],277'b0} : {1'b1,Small[22:0],277'b0};
 
-wire [300:0] shiftsm;
+wire [300:0] shiftedS;
 wire oror;
 
 // 小さい方をシフト
-assign shiftsm = sm >> d;
-assign oror = |sm[274:0];
+assign shiftedS = Small2 >> Shift_n;
+assign oror = |Small2[274:0];
 
-wire [25:0] lar;
-wire [25:0] sma;
+wire [25:0] Large3;
+wire [25:0] Small3;
 
 // 負の数ならば補数に変換
-assign lar = (L==1'b1) ? ~la + 1'b1 : la;
-assign sma = (S==1'b1) ? (~sm[300:275]) + 1'b1 : sm[300:275];
+assign Large3 = (Large_sign==1'b1) ? ~Large2 + 1'b1 : Large2;
+assign Small3 = (Small_sign==1'b1) ? (~Small2[300:275]) + 1'b1 : Small2[300:275];
 
 
-add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .e(e) .res(res) )
+add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror) .e(Large_e) .res(res) )
 
 //非正規数の対処はまだできてないです
 
