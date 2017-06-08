@@ -177,54 +177,62 @@ module mainmodule(
 	output [31:0] res
 );
 
-wire [30:0] l,
-wire [30:0] s,
-wire L,
-wire S,
-wire [31:0] d;
-wire [7:0] e;
+wire [30:0] Large;
+wire [30:0] Small;
+wire Large_sign;
+wire Small_sign;
+wire [31:0] Shift_n;
+wire [7:0] Large_e;
+wire [7:0] Small_e;
 
-assign l = 
+assign Large = 
     (a[30:23] > b[30:23]) ? a[30:0] :
     (b[30:23] > a[30:23]) ? b[30:0] :
     (a[22:0] > b[22:0])   ? a[30:0] : 
     (b[22:0] > a[22:0])   ? b[30:0] : 
     a[30:0];
 
-assign s = 
+assign Small = 
     (a[30:23] > b[30:23]) ? b[30:0] :
     (b[30:23] > a[30:23]) ? a[30:0] :
     (a[22:0] > b[22:0])   ? b[30:0] : 
     (b[22:0] > a[22:0])   ? a[30:0] : 
     b[30:0];
 
-assign L = 
+assign Large_sign = 
     (a[30:23] > b[30:23]) ? a[31] :
     (b[30:23] > a[30:23]) ? b[31] :
     (a[22:0] > b[22:0])   ? a[31] : 
     (b[22:0] > a[22:0])   ? b[31] : 
     a[31];
 
-assign S = 
+assign Small_sign = 
     (a[30:23] > b[30:23]) ? b[31] :
     (b[30:23] > a[30:23]) ? a[31] :
     (a[22:0] > b[22:0])   ? b[31] : 
     (b[22:0] > a[22:0])   ? a[31] : 
     b[31];
 
-assign d = 
+assign Shift_n = 
     (a[30:23] > b[30:23]) ? a[30:23] - b[30:23] :
     (b[30:23] > a[30:23]) ? b[30:23] - a[30:23] :
     (a[22:0] > b[22:0])   ? a[30:23] - b[30:23] : 
     (b[22:0] > a[22:0])   ? b[30:23] - a[30:23] : 
     a[30:23] - b[30:23];
 
-assign e = 
+assign Large_e = 
     (a[30:23] > b[30:23]) ? a[30:23] :
     (b[30:23] > a[30:23]) ? b[30:23] :
     (a[22:0] > b[22:0])   ? a[30:23] : 
     (b[22:0] > a[22:0])   ? b[30:23] : 
     a[30:23];
 
-calladd calladd( .l(l), .s(s), .L(L), .S(S), .d(d), .res(res). e(e) )
+assign Small_e = 
+    (a[30:23] > b[30:23]) ? b[30:23] :
+    (b[30:23] > a[30:23]) ? a[30:23] :
+    (a[22:0] > b[22:0])   ? b[30:23] : 
+    (b[22:0] > a[22:0])   ? a[30:23] : 
+    b[30:23];
+
+calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .Large_e(Large_e), .Small_e(Small_e) )
 endmodule
