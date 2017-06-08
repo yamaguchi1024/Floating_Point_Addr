@@ -8,6 +8,7 @@ module normalize(
 	wire [0:0] fugo;
 	wire [4:0] u;
 	wire [23:0] number;
+	wire [23:0] number_shiftl;
 	wire [31:0] temp; //出力一時保存先
 
 // 正規化などをする
@@ -17,42 +18,37 @@ module normalize(
 
 always_comb @(kekka, e) begin
 
-	if (kekka[24] == 1'b1) begin
-		number[23:0] =  ((~kekka[23:0]) + 1'b1);// ~はビット反転（たぶん）
-		fugo[0] = kekka[24];
+	assign number[23:0] = (kekka[24] == 1'b1) ? ((~kekka[23:0]) + 1'b1) : kekka[23:0];// ~はビット反転（たぶん）
+        assign fugo[0] = kekka[24];
 		//補数を２進に直してnumberに入れた
-	end else begin
-		number = kekka[23:0];
-		fugo[0] = kekka[24];
-	end
 end
 
 function [4:0] discover_first_1; //pdfだと25bit目が1の時右shiftしてるんだけど、盛くんの実装だと25bit目は符号らしいので、ここは24bit目が１の時右shiftにすべきでは？と考えて変えた
 	input [23:0] t;
-	if(t[23]==1'b1) discover_first_1 = 5'b11111;
-	else if(t[22]==1'b1) discover_first_1 = 5'b00000;
-	else if(t[21]==1'b1) discover_first_1 = 5'b00001;
-	else if(t[20]==1'b1) discover_first_1 = 5'b00010;
-	else if(t[19]==1'b1) discover_first_1 = 5'b00011;
-	else if(t[18]==1'b1) discover_first_1 = 5'b00100;
-	else if(t[17]==1'b1) discover_first_1 = 5'b00101;
-	else if(t[16]==1'b1) discover_first_1 = 5'b00110;
-	else if(t[15]==1'b1) discover_first_1 = 5'b00111;
-	else if(t[14]==1'b1) discover_first_1 = 5'b01000;
-	else if(t[13]==1'b1) discover_first_1 = 5'b01001;
-	else if(t[12]==1'b1) discover_first_1 = 5'b01010;
-	else if(t[11]==1'b1) discover_first_1 = 5'b01011;
-	else if(t[10]==1'b1) discover_first_1 = 5'b01100;
-	else if(t[9]==1'b1) discover_first_1 = 5'b01101;
-	else if(t[8]==1'b1) discover_first_1 = 5'b01110;
-	else if(t[7]==1'b1) discover_first_1 = 5'b01111;
-	else if(t[6]==1'b1) discover_first_1 = 5'b10000;
-	else if(t[5]==1'b1) discover_first_1 = 5'b10001;
-	else if(t[4]==1'b1) discover_first_1 = 5'b10010;
-	else if(t[3]==1'b1) discover_first_1 = 5'b10011;
-	else if(t[2]==1'b1) discover_first_1 = 5'b10100;
-	else if(t[1]==1'b1) discover_first_1 = 5'b10101;
-	else if(t[0]==1'b1) discover_first_1 = 5'b10110;
+	assign discover_first_1 = (t[23]==1'b1) ? 5'b11111:
+	(t[22]==1'b1) ? 5'b00000:
+	(t[21]==1'b1) ? 5'b00001:
+	(t[20]==1'b1) ? 5'b00010:
+	(t[19]==1'b1) ? 5'b00011:
+	(t[18]==1'b1) ? 5'b0010:
+	(t[17]==1'b1) ? 5'b00101:
+	(t[16]==1'b1) ? 5'b00110:
+	(t[15]==1'b1) ? 5'b00111:
+	(t[14]==1'b1) ? 5'b01000:
+	(t[13]==1'b1) ? 5'b01001:
+	(t[12]==1'b1) ? 5'b01010:
+	(t[11]==1'b1) ? 5'b01011:
+	(t[10]==1'b1) ? 5'b01100:
+	(t[9]==1'b1) ? 5'b01101:
+	(t[8]==1'b1) ? 5'b01110:
+	(t[7]==1'b1) ? 5'b01111:
+	(t[6]==1'b1) ? 5'b10000:
+	(t[5]==1'b1) ? 5'b10001:
+	(t[4]==1'b1) ? 5'b10010:
+	(t[3]==1'b1) ? 5'b10011:
+	(t[2]==1'b1) ? 5'b10100:
+	(t[1]==1'b1) ? 5'b10101:
+	5'b10110;
 endfunction
 
 assign u = discover_first_1(number[23:0]);
@@ -61,17 +57,11 @@ always_comb @(number, u) begin
 	// 例外処理を入れないといけないのかもしれない。資料では入れているっぽい。とりあえず後回し。
 	// 右シフトするのは、number[23]が１のときで、1bit右シフト
 	// 左シフトするのは、それ以外の時で、uの数ぶんシフト
+	
+	assign number_shiftl = number << u
+	assign temp[31:0] = (u == 5'b1111)? {fugo[0:0], (e+1'b1), number[23:1]} : {fugo[0:0], (e-u), number_shiftl[23:1]};
+	// e-uが、e:8bit u:5bitなのでこのまま引き算していいのか不安
 
-	if (u == 5'b1111) begin
-		temp[22:0] = number[23:1]; // ずらした仮数を格納
-		temp[30:23] = e + 1'b1; // 指数に１プラス
-		temp[31] = fugo[0];
-	end else if
-		temp[22:0] = number << u; //uだけ左shiftしたいんだけどこの書き方でいいのか不安
-		temp[30;23] = e - u; // ここeが8bitでuが5bitなんだけどそのまま足し算していいのか不安
-		temp[31] = fugo[0];
-
-	end
 
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
@@ -154,7 +144,7 @@ wire [25:0] la;
 wire [300:0] sm;
 
 // 上下2bit拡張
-assign la = (|l==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
+assign la = (|e==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
 assign sm = (|s==1'b0) ? {1'b0,s[22:0],277'b0} : {1'b1,s[22:0],277'b0};
 
 wire [300:0] shiftsm;
@@ -169,16 +159,8 @@ wire [25:0] sma;
 
 // 負の数ならば補数に変換
 always @(L or S or la or shiftsm) begin
-	if(L==1'b1) begin
-		lar <= ~l + 1'b1;
-	end else begin
-		lar <= l;
-	end
-	if(S==1'b1) begin
-		sma <=(~sm[300:275]) + 1'b1;
-	end else begin
-		sma <= sm[300:275];
-	end
+	assign lar = (L==1'b1) ? ~la + 1'b1 : la;
+	assign sma = (S==1'b1) ? (~sm[300:275]) + 1'b1 : sm[300:275];
 end
 
 add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .e(e) .res(res) )
