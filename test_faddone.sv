@@ -19,12 +19,12 @@ fadd u1(x1,x2,y,ovf);
 initial begin
     // $dumpfile("test_fadd.vcd");
     // $dumpvars(0);
-    s1[0] = 1'b0;
+    s1[0] = 1'b1;
     s2[0] = 1'b1;
-    i     = 8'd200;
-    j     = 8'd201;
-    m1    = 23'd40;
-    m2    = 23'd40;
+    i     = 8'b00000001;
+    j     = 8'b10111101;
+    m1    = 23'b10111111111111111111111;
+    m2    = 23'b11111111111111111111111;
     x1i = {s1[0],i[7:0],m1};
     x2i = {s2[0],j[7:0],m2};
     fx1 = $bitstoshortreal(x1i);
