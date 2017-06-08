@@ -20,11 +20,11 @@ initial begin
     // $dumpfile("test_fadd.vcd");
     // $dumpvars(0);
     s1[0] = 1'b0;
-    s1[0] = 1'b0;
-    i     = 8'd130;
-    j     = 8'd130;
-    m1    = 23'd10;
-    m2    = 23'd10;
+    s2[0] = 1'b0;
+    i     = 8'd200;
+    j     = 8'd199;
+    m1    = 23'd40;
+    m2    = 23'd39;
     x1i = {s1[0],i[7:0],m1};
     x2i = {s2[0],j[7:0],m2};
     fx1 = $bitstoshortreal(x1i);
@@ -33,7 +33,7 @@ initial begin
     fybit = $shortrealtobits(fy);
     #1;
     if (y !== fybit) begin
-        $display("x1, x2 = %b %b\n", x1, x2);
+        $display("x1, x2 = %b %b\nx1, x2 = %e %e\n", x1, x2, $bitstoshortreal(x1), $bitstoshortreal(x2) );
         $display("%e %b\n", fy, $shortrealtobits(fy));
         $display("%e %b\n", $bitstoshortreal(y), y);
     end

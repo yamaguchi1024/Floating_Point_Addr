@@ -1,4 +1,4 @@
-Running: xsim.dir/test_faddone.sim/xsimk -runall -simmode gui -wdb test_faddone.sim.wdb -simrunnum 0 -socket 39393
+Running: xsim.dir/test_faddone.sim/xsimk -runall -simmode gui -wdb test_faddone.sim.wdb -simrunnum 0 -socket 52465
 Design successfully loaded
 Design Loading Memory Usage: 49596 KB (Peak: 49660 KB)
 Design Loading CPU Usage: 0 ms

@@ -2,8 +2,8 @@
 # xsim v2016.4 (64-bit)
 # SW Build 1756540 on Mon Jan 23 19:11:19 MST 2017
 # IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
-# Start of session at: Thu Jun  8 15:23:43 2017
-# Process ID: 31781
+# Start of session at: Thu Jun  8 16:07:04 2017
+# Process ID: 1363
 # Current directory: /home/yamaguchi/Floating_Point_Addr
 # Command line: xsim -mode tcl -source {xsim.dir/test_faddone.sim/xsim_script.tcl}
 # Log file: /home/yamaguchi/Floating_Point_Addr/xsim.log
@@ -14,12 +14,13 @@ source xsim.dir/test_faddone.sim/xsim_script.tcl
 Vivado Simulator 2016.4
 Time resolution is 100 ps
 run -all
-x1, x2 = 01000001000000000000000000001010 01000001000000000000000000001010
+x1, x2 = 01100100000000000000000000101000 01100011100000000000000000100111
+x1, x2 = 9.444778e+21 4.722388e+21
 
-1.600002e+01 01000001100000000000000000001010
+1.416717e+22 01100100010000000000000000111100
 
--3.199998e+01 11000001111111111111111111110110
+1.298652e+22 01100100001100000000000000001111
 
 $finish called at time : 1 ns : File "/home/yamaguchi/Floating_Point_Addr/test_faddone.sv" Line 40
 exit
-INFO: [Common 17-206] Exiting xsim at Thu Jun  8 15:23:50 2017...
+INFO: [Common 17-206] Exiting xsim at Thu Jun  8 16:07:10 2017...
