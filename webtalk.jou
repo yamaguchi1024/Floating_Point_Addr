@@ -2,11 +2,11 @@
 # Webtalk v2016.4 (64-bit)
 # SW Build 1756540 on Mon Jan 23 19:11:19 MST 2017
 # IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
-# Start of session at: Thu Jun  8 14:50:48 2017
-# Process ID: 30021
+# Start of session at: Thu Jun  8 15:23:48 2017
+# Process ID: 31824
 # Current directory: /home/yamaguchi/Floating_Point_Addr
-# Command line: wbtcv -mode batch -source /home/yamaguchi/Floating_Point_Addr/xsim.dir/test_fadd.sim/webtalk/xsim_webtalk.tcl -notrace
+# Command line: wbtcv -mode batch -source /home/yamaguchi/Floating_Point_Addr/xsim.dir/test_faddone.sim/webtalk/xsim_webtalk.tcl -notrace
 # Log file: /home/yamaguchi/Floating_Point_Addr/webtalk.log
 # Journal file: /home/yamaguchi/Floating_Point_Addr/webtalk.jou
 #-----------------------------------------------------------
-source /home/yamaguchi/Floating_Point_Addr/xsim.dir/test_fadd.sim/webtalk/xsim_webtalk.tcl -notrace
+source /home/yamaguchi/Floating_Point_Addr/xsim.dir/test_faddone.sim/webtalk/xsim_webtalk.tcl -notrace
