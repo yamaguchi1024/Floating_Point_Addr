@@ -15,3 +15,8 @@ git push origin master
 ```
 * プルリクエストを作る
 * 自分のリポジトリからPull Requestsボタンを押し、create new pull requestを押す
+
+### テスト
+```
+xvlog --sv test_fadd.sv fpu.sv
+```
