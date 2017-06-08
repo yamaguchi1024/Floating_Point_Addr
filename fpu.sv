@@ -88,7 +88,7 @@ wire [24:0] sum_rnd;
 // 普通に足し算 符号拡張法
 //ulps={sumの下位2ビット,large_nの符号とsmall_nの符号のxor,bit_rとsum[0]のor}
 
-assign sum ={Large_n[25],Large_n}+{Small_n[25],Small_n};
+assign sum = (Large_n == Small_n) ? 32'b0 : {Large_n[25],Large_n}+{Small_n[25],Small_n};
 assign ulps ={sum[2:1],Large_n[25]^Small_n[25],sum[0]|bit_r};
 
 // 場合分け
