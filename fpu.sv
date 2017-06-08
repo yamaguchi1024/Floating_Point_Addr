@@ -62,6 +62,7 @@ always_comb @(number, u) begin
 	assign temp[31:0] = (u == 5'b1111)? {fugo[0:0], (e+1'b1), number[23:1]} : {fugo[0:0], (e-u), number_shiftl[23:1]};
 	// e-uが、e:8bit u:5bitなのでこのまま引き算していいのか不安
 
+
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
 
@@ -82,51 +83,48 @@ module add(
 
 wire [26:0] sum;
 wire [3:0] ulps;
-wire [24:0] sum_rnd
+wire [24:0] sum_rnd;
 
 // 普通に足し算 符号拡張法
 //ulps={sumの下位2ビット,large_nの符号とsmall_nの符号のxor,bit_rとsum[0]のor}
 
 assign sum ={Large_n[25],Large_n}+{Small_n[25],Small_n};
-assign ulps ={sum[2:1],Large_n[25]^Small_n[25],sum[0]|bit_r}
+assign ulps ={sum[2:1],Large_n[25]^Small_n[25],sum[0]|bit_r};
 
 // 場合分け
-always_comb begin
-	case(ulps)
-		//結果が正
+
+	//結果が正
 		//0.1ulp未満=>切り捨て
-		2'b0000:sum_rnd=sum[26:2];
-		2'b0001:sum_rnd=sum[26:2];
-		2'b1000:sum_rnd=sum[26:2];
-		2'b1001:sum_rnd=sum[26:2];
+assign sum_rnd=	//(ulps == 2'b0000) ? sum[26:2]:
+		//(ulps == 2'b0001) ? sum[26:2]:
+		//(ulps == 2'b1000) ? sum[26:2]:
+		//(ulps == 2'b1001) ? sum[26:2]:
 		//0.1ulp=>切り捨て ラウンドイーブン
-		2'b0100:sum_rnd=sum[26:2];
+		//(ulps == 2'b0100) ? sum[26:2]:
 		//0.1ulp=>切り上げ ラウンドイーブン
-		2'b1100:sum_rnd=sum[26:2]+1;
+		(ulps == 2'b1100) ? sum[26:2]+1:
 		//0.1ulp以上=>切り上げ
-		2'b0101:sum_rnd=sum[26:2]+1;
-		2'b1101:sum_rnd=sum[26:2]+1;
+		(ulps == 2'b0101) ? sum[26:2]+1:
+		(ulps == 2'b1101) ? sum[26:2]+1:
 		//結果が負
 		//0.1ulp未満=>切り捨て
-		2'b0010:sum_rnd=sum[26:2];
-		2'b0011:sum_rnd=sum[26:2];
-		2'b1010:sum_rnd=sum[26:2];
-		2'b1011:sum_rnd=sum[26:2];
+		//(ulps == 2'b0010) ? sum[26:2]:
+		//(ulps == 2'b0011) ? sum[26:2]:
+		//(ulps == 2'b1010) ? sum[26:2]:
+		//(ulps == 2'b1011) ? sum[26:2]:
 		//0.1ulp=>切り捨て ラウンドイーブン
-		2'b0110:sum_rnd=sum[26:2];
+		//(ulps == 2'b0110) ? sum[26:2]:
 		//0.1ulp=>切り上げ ラウンドイーブン
-		2'b1110:sum_rnd=sum[26:2]-1;
+		(ulps == 2'b1110) ? sum[26:2]-1:
 		//0.1ulp以上=>切り上げ
-		2'b0111:sum_rnd=sum[26:2]-1;
-		2'b1111:sum_rnd=sum[26:2]-1;
-	endcase
-end
-
+		(ulps == 2'b0111) ? sum[26:2]-1:
+		(ulps == 2'b1111) ? sum[26:2]-1:
+		sum[26:2];
 
 //
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
-normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) )
+normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) );
 
 
 endmodule
@@ -146,7 +144,7 @@ wire [25:0] la;
 wire [300:0] sm;
 
 // 上下2bit拡張
-assign la = (|l==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
+assign la = (|e==1'b0) ? {1'b0,l[22:0],2'b00} : {1'b1,l[22:0],2'b00};
 assign sm = (|s==1'b0) ? {1'b0,s[22:0],277'b0} : {1'b1,s[22:0],277'b0};
 
 wire [300:0] shiftsm;
@@ -161,16 +159,8 @@ wire [25:0] sma;
 
 // 負の数ならば補数に変換
 always @(L or S or la or shiftsm) begin
-	if(L==1'b1) begin
-		lar <= ~l + 1'b1;
-	end else begin
-		lar <= l;
-	end
-	if(S==1'b1) begin
-		sma <=(~sm[300:275]) + 1'b1;
-	end else begin
-		sma <= sm[300:275];
-	end
+	assign lar = (L==1'b1) ? ~la + 1'b1 : la;
+	assign sma = (S==1'b1) ? (~sm[300:275]) + 1'b1 : sm[300:275];
 end
 
 add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .e(e) .res(res) )
@@ -194,40 +184,47 @@ wire S,
 wire [31:0] d;
 wire [7:0] e;
 
-always_comb begin
-if (a[30:23] !== b[30:23]) begin
-	assign l = (a[30:23] > b[30:23]) ? a[30:0] : b[30:0] ;
-	assign s = (a[30:23] > b[30:23]) ? b[30:0] : a[30:0] ;
-	assign L = (a[30:23] > b[30:23]) ? a[31] : b[31] ;
-	assign S = (a[30:23] > b[30:23]) ? b[31] : a[31] ;
-	assign d = (a[30:23] > b[30:23]) ? a[30:23] - b[30:23] : b[30:23] - a[30:23];
-	assign e = (a[30:23] > b[30:23]) ? a[30:23] : b[30:23] ;
+assign l = 
+    (a[30:23] > b[30:23]) ? a[30:0] :
+    (b[30:23] > a[30:23]) ? b[30:0] :
+    (a[22:0] > b[22:0])   ? a[30:0] : 
+    (b[22:0] > a[22:0])   ? b[30:0] : 
+    a[30:0];
 
-else if(a[22:0] > b[22:0]) begin
-	assign l = a[30:0];
-	assign s = b[30:0];
-	assign L = a[31];
-	assign S = b[31];
-	assign d = a[30:23] - b[30:23];
-    assign e = a[30:23];
+assign s = 
+    (a[30:23] > b[30:23]) ? b[30:0] :
+    (b[30:23] > a[30:23]) ? a[30:0] :
+    (a[22:0] > b[22:0])   ? b[30:0] : 
+    (b[22:0] > a[22:0])   ? a[30:0] : 
+    b[30:0];
 
-else if (a[22:0] < b[22:0]) begin
-	assign l = b[30:0];
-	assign s = a[30:0];
-	assign L = b[31];
-	assign S = a[31];
-	assign d = b[30:23] - a[30:23];
-    assign e = b[30:23];
+assign L = 
+    (a[30:23] > b[30:23]) ? a[31] :
+    (b[30:23] > a[30:23]) ? b[31] :
+    (a[22:0] > b[22:0])   ? a[31] : 
+    (b[22:0] > a[22:0])   ? b[31] : 
+    a[31];
 
-// ここは適当
-else if (a[22:0] == b[22:0]) begin
-	assign l = b[30:0];
-	assign s = a[30:0];
-	assign L = b[31];
-	assign S = a[31];
-	assign d = a[30:23] - b[30:23];
-    assign e = a[30:23];
-end 
+assign S = 
+    (a[30:23] > b[30:23]) ? b[31] :
+    (b[30:23] > a[30:23]) ? a[31] :
+    (a[22:0] > b[22:0])   ? b[31] : 
+    (b[22:0] > a[22:0])   ? a[31] : 
+    b[31];
+
+assign d = 
+    (a[30:23] > b[30:23]) ? a[30:23] - b[30:23] :
+    (b[30:23] > a[30:23]) ? b[30:23] - a[30:23] :
+    (a[22:0] > b[22:0])   ? a[30:23] - b[30:23] : 
+    (b[22:0] > a[22:0])   ? b[30:23] - a[30:23] : 
+    a[30:23] - b[30:23];
+
+assign e = 
+    (a[30:23] > b[30:23]) ? a[30:23] :
+    (b[30:23] > a[30:23]) ? b[30:23] :
+    (a[22:0] > b[22:0])   ? a[30:23] : 
+    (b[22:0] > a[22:0])   ? b[30:23] : 
+    a[30:23];
 
 calladd calladd( .l(l), .s(s), .L(L), .S(S), .d(d), .res(res). e(e) )
 endmodule
