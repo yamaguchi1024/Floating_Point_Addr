@@ -5,71 +5,71 @@ module normalize(
     output [31:0] res
 );
 
+	wire [0:0] fugo;
 	wire [4:0] u;
-	reg [24:0] number;
-	reg [24:0] number_shiftr;
-	reg [31:0] temp; //出力一時保存先
+	wire [23:0] number;
+	wire [31:0] temp; //出力一時保存先
 
 // 正規化などをする
 // addから渡された値は正ならば正、負ならば２の補数表示になっている
 
 // 補数ならば２進に直す
 
-always @(sum_rnd, e) begin
+always_comb @(kekka, e) begin
 
-	if (sum_rnd[24] == 1'b1) begin
-		number[24:0] <= {1'b1, ((~sum_rnd[23:0]) + 1'b1)}; // ~はビット反転（たぶん）
+	if (kekka[24] == 1'b1) begin
+		number[23:0] =  ((~kekka[23:0]) + 1'b1);// ~はビット反転（たぶん）
+		fugo[0] = kekka[24];
 		//補数を２進に直してnumberに入れた
 	end else begin
-		number <= sum_rnd[24:0];
+		number = kekka[23:0];
+		fugo[0] = kekka[24];
 	end
 end
 
-function [4:0] discover_first_1;
-	input [24:0] t;
-	if(t[24]==1'b1) discover_first_1 = 5'b11111;
-	else if(t[23]==1'b1) discover_first_1 = 5'b00000;
-	else if(t[22]==1'b1) discover_first_1 = 5'b00001;
-	else if(t[21]==1'b1) discover_first_1 = 5'b00010;
-	else if(t[20]==1'b1) discover_first_1 = 5'b00011;
-	else if(t[19]==1'b1) discover_first_1 = 5'b00100;
-	else if(t[18]==1'b1) discover_first_1 = 5'b00101;
-	else if(t[17]==1'b1) discover_first_1 = 5'b00110;
-	else if(t[16]==1'b1) discover_first_1 = 5'b00111;
-	else if(t[15]==1'b1) discover_first_1 = 5'b01000;
-	else if(t[14]==1'b1) discover_first_1 = 5'b01001;
-	else if(t[13]==1'b1) discover_first_1 = 5'b01010;
-	else if(t[12]==1'b1) discover_first_1 = 5'b01011;
-	else if(t[11]==1'b1) discover_first_1 = 5'b01100;
-	else if(t[10]==1'b1) discover_first_1 = 5'b01101;
-	else if(t[9]==1'b1) discover_first_1 = 5'b01110;
-	else if(t[8]==1'b1) discover_first_1 = 5'b01111;
-	else if(t[7]==1'b1) discover_first_1 = 5'b10000;
-	else if(t[6]==1'b1) discover_first_1 = 5'b10001;
-	else if(t[5]==1'b1) discover_first_1 = 5'b10010;
-	else if(t[4]==1'b1) discover_first_1 = 5'b10011;
-	else if(t[3]==1'b1) discover_first_1 = 5'b10100;
-	else if(t[2]==1'b1) discover_first_1 = 5'b10101;
-	else if(t[1]==1'b1) discover_first_1 = 5'b10110;
-	else if(t[0]==1'b1) discover_first_1 = 5'b10111;
+function [4:0] discover_first_1; //pdfだと25bit目が1の時右shiftしてるんだけど、盛くんの実装だと25bit目は符号らしいので、ここは24bit目が１の時右shiftにすべきでは？と考えて変えた
+	input [23:0] t;
+	if(t[23]==1'b1) discover_first_1 = 5'b11111;
+	else if(t[22]==1'b1) discover_first_1 = 5'b00000;
+	else if(t[21]==1'b1) discover_first_1 = 5'b00001;
+	else if(t[20]==1'b1) discover_first_1 = 5'b00010;
+	else if(t[19]==1'b1) discover_first_1 = 5'b00011;
+	else if(t[18]==1'b1) discover_first_1 = 5'b00100;
+	else if(t[17]==1'b1) discover_first_1 = 5'b00101;
+	else if(t[16]==1'b1) discover_first_1 = 5'b00110;
+	else if(t[15]==1'b1) discover_first_1 = 5'b00111;
+	else if(t[14]==1'b1) discover_first_1 = 5'b01000;
+	else if(t[13]==1'b1) discover_first_1 = 5'b01001;
+	else if(t[12]==1'b1) discover_first_1 = 5'b01010;
+	else if(t[11]==1'b1) discover_first_1 = 5'b01011;
+	else if(t[10]==1'b1) discover_first_1 = 5'b01100;
+	else if(t[9]==1'b1) discover_first_1 = 5'b01101;
+	else if(t[8]==1'b1) discover_first_1 = 5'b01110;
+	else if(t[7]==1'b1) discover_first_1 = 5'b01111;
+	else if(t[6]==1'b1) discover_first_1 = 5'b10000;
+	else if(t[5]==1'b1) discover_first_1 = 5'b10001;
+	else if(t[4]==1'b1) discover_first_1 = 5'b10010;
+	else if(t[3]==1'b1) discover_first_1 = 5'b10011;
+	else if(t[2]==1'b1) discover_first_1 = 5'b10100;
+	else if(t[1]==1'b1) discover_first_1 = 5'b10101;
+	else if(t[0]==1'b1) discover_first_1 = 5'b10110;
 endfunction
 
-assign u = discover_first_1(number[24:0]);
+assign u = discover_first_1(number[23:0]);
 
-always @(number, u) begin
+always_comb @(number, u) begin
 	// 例外処理を入れないといけないのかもしれない。資料では入れているっぽい。とりあえず後回し。
-	// 右シフトするのは、number[24]が１のときで、1bit右シフト
+	// 右シフトするのは、number[23]が１のときで、1bit右シフト
 	// 左シフトするのは、それ以外の時で、uの数ぶんシフト
 
 	if (u == 5'b1111) begin
-		number_shiftr <= (number >> 1'b1); // ずらした{符号,仮数}を格納
-		temp[22:0] <= number_shiftr[23:1];
-		temp[30:23] <= e + 1'b1; // 指数に１プラス
-		temp[31] <= number[24];
+		temp[22:0] = number[23:1]; // ずらした仮数を格納
+		temp[30:23] = e + 1'b1; // 指数に１プラス
+		temp[31] = fugo[0];
 	end else begin
-		temp[22:0] <= number << u;
-		temp[30;23] <= e - u;
-		temp[31] <= ;
+		temp[22:0] = number << u; //uだけ左shiftしたいんだけどこの書き方でいいのか不安
+		temp[30;23] = e - u; // ここeが8bitでuが5bitなんだけどそのまま足し算していいのか不安
+		temp[31] = fugo[0];
 
 	end
 
