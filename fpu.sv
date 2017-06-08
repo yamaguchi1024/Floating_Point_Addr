@@ -16,52 +16,50 @@ module normalize(
 
 // 補数ならば２進に直す
 
-always_comb @(kekka, e) begin
+assign number[23:0] = (kekka[24] == 1'b1) ? ((~kekka[23:0]) + 1'b1) : kekka[23:0];// ~はビット反転（たぶん）
+assign fugo[0] = kekka[24];
+//補数を２進に直してnumberに入れた
 
-	assign number[23:0] = (kekka[24] == 1'b1) ? ((~kekka[23:0]) + 1'b1) : kekka[23:0];// ~はビット反転（たぶん）
-        assign fugo[0] = kekka[24];
-		//補数を２進に直してnumberに入れた
-end
+wire [4:0] discover_first_1;
 
-function [4:0] discover_first_1; //pdfだと25bit目が1の時右shiftしてるんだけど、盛くんの実装だと25bit目は符号らしいので、ここは24bit目が１の時右shiftにすべきでは？と考えて変えた
-	input [23:0] t;
-	assign discover_first_1 = (t[23]==1'b1) ? 5'b11111:
-	(t[22]==1'b1) ? 5'b00000:
-	(t[21]==1'b1) ? 5'b00001:
-	(t[20]==1'b1) ? 5'b00010:
-	(t[19]==1'b1) ? 5'b00011:
-	(t[18]==1'b1) ? 5'b0010:
-	(t[17]==1'b1) ? 5'b00101:
-	(t[16]==1'b1) ? 5'b00110:
-	(t[15]==1'b1) ? 5'b00111:
-	(t[14]==1'b1) ? 5'b01000:
-	(t[13]==1'b1) ? 5'b01001:
-	(t[12]==1'b1) ? 5'b01010:
-	(t[11]==1'b1) ? 5'b01011:
-	(t[10]==1'b1) ? 5'b01100:
-	(t[9]==1'b1) ? 5'b01101:
-	(t[8]==1'b1) ? 5'b01110:
-	(t[7]==1'b1) ? 5'b01111:
-	(t[6]==1'b1) ? 5'b10000:
-	(t[5]==1'b1) ? 5'b10001:
-	(t[4]==1'b1) ? 5'b10010:
-	(t[3]==1'b1) ? 5'b10011:
-	(t[2]==1'b1) ? 5'b10100:
-	(t[1]==1'b1) ? 5'b10101:
+//pdfだと25bit目が1の時右shiftしてるんだけど、盛くんの実装だと25bit目は符号らしいので、ここは24bit目が１の時右shiftにすべきでは？と考えて変えた
+
+assign discover_first_1 = 
+    (number[23]==1'b1) ? 5'b11111:
+	(number[22]==1'b1) ? 5'b00000:
+	(number[21]==1'b1) ? 5'b00001:
+	(number[20]==1'b1) ? 5'b00010:
+	(number[19]==1'b1) ? 5'b00011:
+	(number[18]==1'b1) ? 5'b0010:
+	(number[17]==1'b1) ? 5'b00101:
+	(number[16]==1'b1) ? 5'b00110:
+	(number[15]==1'b1) ? 5'b00111:
+	(number[14]==1'b1) ? 5'b01000:
+	(number[13]==1'b1) ? 5'b01001:
+	(number[12]==1'b1) ? 5'b01010:
+	(number[11]==1'b1) ? 5'b01011:
+	(number[10]==1'b1) ? 5'b01100:
+	(number[9]==1'b1) ? 5'b01101:
+	(number[8]==1'b1) ? 5'b01110:
+	(number[7]==1'b1) ? 5'b01111:
+	(number[6]==1'b1) ? 5'b10000:
+	(number[5]==1'b1) ? 5'b10001:
+	(number[4]==1'b1) ? 5'b10010:
+	(number[3]==1'b1) ? 5'b10011:
+	(number[2]==1'b1) ? 5'b10100:
+	(number[1]==1'b1) ? 5'b10101:
 	5'b10110;
-endfunction
 
 assign u = discover_first_1(number[23:0]);
 
-always_comb @(number, u) begin
-	// 例外処理を入れないといけないのかもしれない。資料では入れているっぽい。とりあえず後回し。
-	// 右シフトするのは、number[23]が１のときで、1bit右シフト
-	// 左シフトするのは、それ以外の時で、uの数ぶんシフト
+// 例外処理を入れないといけないのかもしれない。資料では入れているっぽい。とりあえず後回し。
+// 右シフトするのは、number[23]が１のときで、1bit右シフト
+// 左シフトするのは、それ以外の時で、uの数ぶんシフト
 	
-	assign number_shiftl = number << u
-	assign temp[31:0] = (u == 5'b1111)? {fugo[0:0], (e+1'b1), number[23:1]} : {fugo[0:0], (e-u), number_shiftl[23:1]};
-	// e-uが、e:8bit u:5bitなのでこのまま引き算していいのか不安
+assign number_shiftl = number << u
+assign temp[31:0] = (u == 5'b1111)? {fugo[0:0], (e+1'b1), number[23:1]} : {fugo[0:0], (e - {3b'000, u} ), number_shiftl[23:1]};
 
+// e-uが、e:8bit u:5bitなのでこのまま引き算していいのか不安
 
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
