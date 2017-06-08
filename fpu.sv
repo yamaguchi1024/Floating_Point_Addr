@@ -2,7 +2,8 @@
 module normalize(
     input [24:0] sum_rnd,
     input [7:0] e,
-    output [31:0] res
+    output [31:0] res,
+    output ovf
 );
 
 wire [0:0] fugo;
@@ -60,6 +61,7 @@ assign temp = (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : {fugo[0:
 
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
+//ovfもよろしく
 
 endmodule
 
@@ -72,7 +74,8 @@ module add(
 	input [25:0] Small_n,
 	input bit_r,
 	input [7:0] e,
-	output [31:0] res
+	output [31:0] res,
+	output ovf
 );
 
 
@@ -119,7 +122,7 @@ assign sum_rnd=	//(ulps == 4'b0000) ? sum[26:2]:
 //
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
-normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) );
+normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res), .ovf(ovf) );
 
 endmodule
 
@@ -133,7 +136,8 @@ module calladd(
 	input [7:0] Shift_n,
 	input [7:0] Large_e,
 	input [7:0] Small_e,
-	output [31:0] res
+	output [31:0] res,
+	output ovf
 );
 
 wire [25:0] Large2;
@@ -158,7 +162,7 @@ assign Large3 = (Large_sign==1'b1) ? ~Large2 + 1'b1 : Large2;
 assign Small3 = (Small_sign==1'b1) ? (~shiftedS[300:275]) + 1'b1 : shiftedS[300:275];
 
 
-add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror), .e(Large_e), .res(res) );
+add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror), .e(Large_e), .res(res), .ovf(ovf) );
 
 //非正規数の対処はまだできてないです
 
@@ -230,6 +234,6 @@ assign Small_e =
     (b[22:0] > a[22:0])   ? a[30:23] : 
     b[30:23];
 
-calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .Large_e(Large_e), .Small_e(Small_e) );
+calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .ovf(ovf), .Large_e(Large_e), .Small_e(Small_e) );
 
 endmodule
