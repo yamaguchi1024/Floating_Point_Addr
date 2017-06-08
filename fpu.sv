@@ -10,6 +10,7 @@ wire [0:0] fugo;
 wire [4:0] u;
 wire [23:0] number;
 wire [23:0] number_shiftl;
+wire [31:0] temp_shiftr;
 wire [31:0] temp; //出力一時保存先
 
 // 正規化などをする
@@ -55,8 +56,11 @@ assign u =
 // 左シフトするのは、それ以外の時で、uの数ぶんシフト
 	
 assign number_shiftl = number << (u + 2) ;
-assign temp = 
-    (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : 
+assign temp_shiftr = 
+    (u == 5'b11111 && number[0] == 1'b1 && number[1] == 1'b0) ? {fugo[0:0], (e + 1'b1), number[23:1]} :
+    (u == 5'b11111 && number[23:0] == 24'b111111111111111111111111 && e == 8'b11111110) ? {fugo[0:0], (e + 1'b1), 23'b00000000000000000000000} //正の無限大 :
+    (u == 5'b11111 && number[23:0] == 24'b111111111111111111111111) ? {fugo[0:0], (e + 2'b1), 23'b10000000000000000000000} : //丸め処理の結果、更に1bit右シフトが必要
+    u == 5'b11111 && number[0] == 1'b1 && number[1] == 1'b1) ? {fugo[0:0], (e + 1'b1), (number[23:1] + 1'b1)} : //丸め処理のためLSBに＋１
 	(e >= {3'b000, u}) ? {fugo[0:0], (e - {3'b000, u} ), number_shiftl[23:1]} : 
 	{fugo[0:0], (8'b00000000), number_shiftl[23:1]};
 
