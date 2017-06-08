@@ -5,26 +5,25 @@ module normalize(
     output [31:0] res
 );
 
-	wire [0:0] fugo;
-	wire [4:0] u;
-	wire [23:0] number;
-	wire [23:0] number_shiftl;
-	wire [31:0] temp; //出力一時保存先
+wire [0:0] fugo;
+wire [4:0] u;
+wire [23:0] number;
+wire [23:0] number_shiftl;
+wire [31:0] temp; //出力一時保存先
 
 // 正規化などをする
 // addから渡された値は正ならば正、負ならば２の補数表示になっている
 
 // 補数ならば２進に直す
 
-assign number[23:0] = (kekka[24] == 1'b1) ? ((~kekka[23:0]) + 1'b1) : kekka[23:0];// ~はビット反転（たぶん）
-assign fugo[0] = kekka[24];
-//補数を２進に直してnumberに入れた
+assign number[23:0] = (sum_rnd[24] == 1'b1) ? ((~sum_rnd[23:0]) + 1'b1) : sum_rnd[23:0];// ~はビット反転（たぶん）
+assign fugo[0] = sum_rnd[24];
 
-wire [4:0] discover_first_1;
+//補数を２進に直してnumberに入れた
 
 //pdfだと25bit目が1の時右shiftしてるんだけど、盛くんの実装だと25bit目は符号らしいので、ここは24bit目が１の時右shiftにすべきでは？と考えて変えた
 
-assign discover_first_1 = 
+assign u = 
     (number[23]==1'b1) ? 5'b11111:
 	(number[22]==1'b1) ? 5'b00000:
 	(number[21]==1'b1) ? 5'b00001:
@@ -50,14 +49,12 @@ assign discover_first_1 =
 	(number[1]==1'b1) ? 5'b10101:
 	5'b10110;
 
-assign u = discover_first_1(number[23:0]);
-
 // 例外処理を入れないといけないのかもしれない。資料では入れているっぽい。とりあえず後回し。
 // 右シフトするのは、number[23]が１のときで、1bit右シフト
 // 左シフトするのは、それ以外の時で、uの数ぶんシフト
 	
-assign number_shiftl = number << u
-assign temp[31:0] = (u == 5'b1111)? {fugo[0:0], (e+1'b1), number[23:1]} : {fugo[0:0], (e - {3b'000, u} ), number_shiftl[23:1]};
+assign number_shiftl = number << u;
+assign temp = (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : {fugo[0:0], (e - {3'b000, u} ), number_shiftl[23:1]};
 
 // e-uが、e:8bit u:5bitなのでこのまま引き算していいのか不安
 
@@ -93,17 +90,17 @@ assign ulps ={sum[2:1],Large_n[25]^Small_n[25],sum[0]|bit_r};
 
 	//結果が正
 		//0.1ulp未満=>切り捨て
-assign sum_rnd=	//(ulps == 2'b0000) ? sum[26:2]:
+assign sum_rnd=	//(ulps == 4'b0000) ? sum[26:2]:
 		//(ulps == 2'b0001) ? sum[26:2]:
 		//(ulps == 2'b1000) ? sum[26:2]:
 		//(ulps == 2'b1001) ? sum[26:2]:
 		//0.1ulp=>切り捨て ラウンドイーブン
 		//(ulps == 2'b0100) ? sum[26:2]:
 		//0.1ulp=>切り上げ ラウンドイーブン
-		(ulps == 2'b1100) ? sum[26:2]+1:
+		(ulps == 4'b1100) ? sum[26:2]+1:
 		//0.1ulp以上=>切り上げ
-		(ulps == 2'b0101) ? sum[26:2]+1:
-		(ulps == 2'b1101) ? sum[26:2]+1:
+		(ulps == 4'b0101) ? sum[26:2]+1:
+		(ulps == 4'b1101) ? sum[26:2]+1:
 		//結果が負
 		//0.1ulp未満=>切り捨て
 		//(ulps == 2'b0010) ? sum[26:2]:
@@ -113,10 +110,10 @@ assign sum_rnd=	//(ulps == 2'b0000) ? sum[26:2]:
 		//0.1ulp=>切り捨て ラウンドイーブン
 		//(ulps == 2'b0110) ? sum[26:2]:
 		//0.1ulp=>切り上げ ラウンドイーブン
-		(ulps == 2'b1110) ? sum[26:2]-1:
+		(ulps == 4'b1110) ? sum[26:2]-1:
 		//0.1ulp以上=>切り上げ
-		(ulps == 2'b0111) ? sum[26:2]-1:
-		(ulps == 2'b1111) ? sum[26:2]-1:
+		(ulps == 4'b0111) ? sum[26:2]-1:
+		(ulps == 4'b1111) ? sum[26:2]-1:
 		sum[26:2];
 
 //
@@ -161,7 +158,7 @@ assign Large3 = (Large_sign==1'b1) ? ~Large2 + 1'b1 : Large2;
 assign Small3 = (Small_sign==1'b1) ? (~Small2[300:275]) + 1'b1 : Small2[300:275];
 
 
-add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror) .e(Large_e) .res(res) )
+add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror), .e(Large_e), .res(res) );
 
 //非正規数の対処はまだできてないです
 
@@ -232,5 +229,6 @@ assign Small_e =
     (b[22:0] > a[22:0])   ? a[30:23] : 
     b[30:23];
 
-calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .Large_e(Large_e), .Small_e(Small_e) )
+calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .Large_e(Large_e), .Small_e(Small_e) );
+
 endmodule

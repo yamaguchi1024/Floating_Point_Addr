@@ -2,23 +2,6 @@ INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/yamaguchi/Floating_Poin
 INFO: [VRFC 10-311] analyzing module test_fadd
 INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/yamaguchi/Floating_Point_Addr/fpu.sv" into library work
 INFO: [VRFC 10-311] analyzing module normalize
-ERROR: [VRFC 10-1412] syntax error near temp [/home/yamaguchi/Floating_Point_Addr/fpu.sv:70]
-ERROR: [VRFC 10-1412] syntax error near ; [/home/yamaguchi/Floating_Point_Addr/fpu.sv:71]
-ERROR: [VRFC 10-39] event control in always_comb/always_latch is not allowed [/home/yamaguchi/Floating_Point_Addr/fpu.sv:18]
-ERROR: [VRFC 10-91] kekka is not declared [/home/yamaguchi/Floating_Point_Addr/fpu.sv:18]
-ERROR: [VRFC 10-91] kekka is not declared [/home/yamaguchi/Floating_Point_Addr/fpu.sv:20]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register number is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:21]
-ERROR: [VRFC 10-91] kekka is not declared [/home/yamaguchi/Floating_Point_Addr/fpu.sv:21]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register fugo is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:22]
-ERROR: [VRFC 10-91] kekka is not declared [/home/yamaguchi/Floating_Point_Addr/fpu.sv:22]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register number is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:25]
-ERROR: [VRFC 10-91] kekka is not declared [/home/yamaguchi/Floating_Point_Addr/fpu.sv:25]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register fugo is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:26]
-ERROR: [VRFC 10-91] kekka is not declared [/home/yamaguchi/Floating_Point_Addr/fpu.sv:26]
-ERROR: [VRFC 10-39] event control in always_comb/always_latch is not allowed [/home/yamaguchi/Floating_Point_Addr/fpu.sv:60]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register temp is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:66]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register temp is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:66]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register temp is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:67]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register temp is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:67]
-ERROR: [VRFC 10-1280] procedural assignment to a non-register temp is not permitted, left-hand side should be reg/integer/time/genvar [/home/yamaguchi/Floating_Point_Addr/fpu.sv:68]
-INFO: [#UNDEF] Sorry, too many errors..
+INFO: [VRFC 10-311] analyzing module add
+INFO: [VRFC 10-311] analyzing module calladd
+INFO: [VRFC 10-311] analyzing module mainmodule
