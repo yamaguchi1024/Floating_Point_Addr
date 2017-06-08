@@ -93,43 +93,43 @@ module add(
 
 wire [26:0] sum;
 wire [3:0] ulps;
-wire [24:0] sum_rnd
+wire [24:0] sum_rnd;
 
 // 普通に足し算 符号拡張法
 //ulps={sumの下位2ビット,large_nの符号とsmall_nの符号のxor,bit_rとsum[0]のor}
 
 assign sum ={Large_n[25],Large_n}+{Small_n[25],Small_n};
-assign ulps ={sum[2:1],Large_n[25]^Small_n[25],sum[0]|bit_r}
+assign ulps ={sum[2:1],Large_n[25]^Small_n[25],sum[0]|bit_r};
 
 // 場合分け
-always_comb begin
-	case(ulps)
-		//結果が正
+
+	//結果が正
 		//0.1ulp未満=>切り捨て
-		2'b0000:sum_rnd=sum[26:2];
-		2'b0001:sum_rnd=sum[26:2];
-		2'b1000:sum_rnd=sum[26:2];
-		2'b1001:sum_rnd=sum[26:2];
+assign sum_rnd=	//(ulps == 2'b0000) ? sum[26:2]:
+		//(ulps == 2'b0001) ? sum[26:2]:
+		//(ulps == 2'b1000) ? sum[26:2]:
+		//(ulps == 2'b1001) ? sum[26:2]:
 		//0.1ulp=>切り捨て ラウンドイーブン
-		2'b0100:sum_rnd=sum[26:2];
+		//(ulps == 2'b0100) ? sum[26:2]:
 		//0.1ulp=>切り上げ ラウンドイーブン
-		2'b1100:sum_rnd=sum[26:2]+1;
+		(ulps == 2'b1100) ? sum[26:2]+1:
 		//0.1ulp以上=>切り上げ
-		2'b0101:sum_rnd=sum[26:2]+1;
-		2'b1101:sum_rnd=sum[26:2]+1;
+		(ulps == 2'b0101) ? sum[26:2]+1:
+		(ulps == 2'b1101) ? sum[26:2]+1:
 		//結果が負
 		//0.1ulp未満=>切り捨て
-		2'b0010:sum_rnd=sum[26:2];
-		2'b0011:sum_rnd=sum[26:2];
-		2'b1010:sum_rnd=sum[26:2];
-		2'b1011:sum_rnd=sum[26:2];
+		//(ulps == 2'b0010) ? sum[26:2]:
+		//(ulps == 2'b0011) ? sum[26:2]:
+		//(ulps == 2'b1010) ? sum[26:2]:
+		//(ulps == 2'b1011) ? sum[26:2]:
 		//0.1ulp=>切り捨て ラウンドイーブン
-		2'b0110:sum_rnd=sum[26:2];
+		//(ulps == 2'b0110) ? sum[26:2]:
 		//0.1ulp=>切り上げ ラウンドイーブン
-		2'b1110:sum_rnd=sum[26:2]-1;
+		(ulps == 2'b1110) ? sum[26:2]-1:
 		//0.1ulp以上=>切り上げ
-		2'b0111:sum_rnd=sum[26:2]-1;
-		2'b1111:sum_rnd=sum[26:2]-1;
+		(ulps == 2'b0111) ? sum[26:2]-1:
+		(ulps == 2'b1111) ? sum[26:2]-1:
+		sum[26:2];
 	endcase
 end
 
@@ -137,7 +137,7 @@ end
 //
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
-normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) )
+normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) );
 
 
 endmodule
