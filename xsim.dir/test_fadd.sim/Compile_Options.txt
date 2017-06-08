@@ -1,0 +1,1 @@
+-debug "typical" "test_fadd" -s "test_fadd.sim" 

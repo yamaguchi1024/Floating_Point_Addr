@@ -4,4 +4,4 @@ INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/yamaguchi/Floating_Poin
 INFO: [VRFC 10-311] analyzing module normalize
 INFO: [VRFC 10-311] analyzing module add
 INFO: [VRFC 10-311] analyzing module calladd
-INFO: [VRFC 10-311] analyzing module mainmodule
+INFO: [VRFC 10-311] analyzing module fadd

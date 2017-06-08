@@ -166,10 +166,11 @@ endmodule
 
 
 // Main
-module mainmodule(
+module fadd(
 	input [31:0] a,
 	input [31:0] b,
-	output [31:0] res
+	output [31:0] res,
+    output ovf
 );
 
 wire [30:0] Large;

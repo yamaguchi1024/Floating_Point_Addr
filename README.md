@@ -19,4 +19,6 @@ git push origin master
 ### テスト
 ```
 xvlog --sv test_fadd.sv fpu.sv
+xelab -debug typical test_fadd -s test_fadd.sim
+xsim --runall test_fadd.sim 
 ```
