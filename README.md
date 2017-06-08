@@ -4,7 +4,7 @@
 ### やり方
 * githubでこのリポジトリをcloneする。
 ```
-git clone https://github.com/<自分のgithub>/Floating_Point_Addr
+git clone git@github.com:yamaguchi1024/Floating_Point_Addr.git
 cd Floating_Point_Addr
 ```
 * 変更を加える
