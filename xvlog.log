@@ -1,7 +1,7 @@
-INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/yamaguchi/Floating_Point_Addr/test_fadd.sv" into library work
-INFO: [VRFC 10-311] analyzing module test_fadd
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/yamaguchi/Floating_Point_Addr/test_faddone.sv" into library work
+INFO: [VRFC 10-311] analyzing module test_faddone
 INFO: [VRFC 10-2263] Analyzing SystemVerilog file "/home/yamaguchi/Floating_Point_Addr/fpu.sv" into library work
 INFO: [VRFC 10-311] analyzing module normalize
 INFO: [VRFC 10-311] analyzing module add
 INFO: [VRFC 10-311] analyzing module calladd
-INFO: [VRFC 10-311] analyzing module mainmodule
+INFO: [VRFC 10-311] analyzing module fadd

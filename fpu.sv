@@ -2,7 +2,8 @@
 module normalize(
     input [24:0] sum_rnd,
     input [7:0] e,
-    output [31:0] res
+    output [31:0] res,
+    output ovf
 );
 
 wire [0:0] fugo;
@@ -61,6 +62,7 @@ assign temp = (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} :
 
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
+//ovfもよろしく
 
 endmodule
 
@@ -73,7 +75,8 @@ module add(
 	input [25:0] Small_n,
 	input bit_r,
 	input [7:0] e,
-	output [31:0] res
+	output [31:0] res,
+	output ovf
 );
 
 
@@ -117,10 +120,9 @@ assign sum_rnd=	//(ulps == 4'b0000) ? sum[26:2]:
 		(ulps == 4'b1111) ? sum[26:2]-1:
 		sum[26:2];
 
-//
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
-normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) );
+normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res), .ovf(ovf) );
 
 endmodule
 
@@ -134,15 +136,16 @@ module calladd(
 	input [7:0] Shift_n,
 	input [7:0] Large_e,
 	input [7:0] Small_e,
-	output [31:0] res
+	output [31:0] res,
+	output ovf
 );
 
-wire [25:0] Large2;
-wire [300:0] Small2;
+wire [24:0] Large2;
+wire [299:0] Small2;
 
 // 上下2bit拡張
-assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],2'b00} : {1'b1,Large[22:0],2'b00};
-assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],277'b0} : {1'b1,Small[22:0],277'b0};
+assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],1'b0} : {1'b1,Large[22:0],1'b0};
+assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],276'b0} : {1'b1,Small[22:0],276'b0};
 
 wire [300:0] shiftedS;
 wire oror;
@@ -155,22 +158,21 @@ wire [25:0] Large3;
 wire [25:0] Small3;
 
 // 負の数ならば補数に変換
-assign Large3 = (Large_sign==1'b1) ? ~Large2 + 1'b1 : Large2;
-assign Small3 = (Small_sign==1'b1) ? (~shiftedS[300:275]) + 1'b1 : shiftedS[300:275];
+assign Large3 = (Large_sign==1'b1) ? {1'b1,~Large2} + 1'b1 : {1'b0,Large2};
+assign Small3 = (Small_sign==1'b1) ? {1'b1,~shiftedS[299:275]} + 1'b1 : {1'b0,shiftedS[299:275]};
 
 
-add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror), .e(Large_e), .res(res) );
-
-//非正規数の対処はまだできてないです
+add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror), .e(Large_e), .res(res), .ovf(ovf) );
 
 endmodule
 
 
 // Main
-module mainmodule(
+module fadd(
 	input [31:0] a,
 	input [31:0] b,
-	output [31:0] res
+	output [31:0] res,
+    output ovf
 );
 
 wire [30:0] Large;
@@ -230,6 +232,6 @@ assign Small_e =
     (b[22:0] > a[22:0])   ? a[30:23] : 
     b[30:23];
 
-calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .Large_e(Large_e), .Small_e(Small_e) );
+calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .ovf(ovf), .Large_e(Large_e), .Small_e(Small_e) );
 
 endmodule

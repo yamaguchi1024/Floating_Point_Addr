@@ -1,9 +1,8 @@
 
-## 進捗を出したら、プルリクエストを出してください
+## 進捗を出したらそのままpushしてください
 
 ### やり方
-* githubでこのリポジトリをforkする。
-* forkした自分のリポジトリをcloneする
+* githubでこのリポジトリをcloneする。
 ```
 git clone https://github.com/<自分のgithub>/Floating_Point_Addr
 cd Floating_Point_Addr
@@ -13,10 +12,18 @@ cd Floating_Point_Addr
 git commit -a -m "<ここにコメントを書く>"
 git push origin master
 ```
-* プルリクエストを作る
-* 自分のリポジトリからPull Requestsボタンを押し、create new pull requestを押す
 
 ### テスト
+* 全部テスト
 ```
 xvlog --sv test_fadd.sv fpu.sv
+xelab -debug typical test_fadd -s test_fadd.sim
+xsim --runall test_fadd.sim 
+```
+
+* 一個だけテスト
+```
+xvlog --sv test_faddone.sv fpu.sv  
+xelab -debug typical test_faddone -s test_faddone.sim
+xsim --runall test_faddone.sim                       
 ```
