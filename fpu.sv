@@ -29,7 +29,7 @@ assign u =
 	(number[21]==1'b1) ? 5'b00001:
 	(number[20]==1'b1) ? 5'b00010:
 	(number[19]==1'b1) ? 5'b00011:
-	(number[18]==1'b1) ? 5'b0010:
+	(number[18]==1'b1) ? 5'b00100:
 	(number[17]==1'b1) ? 5'b00101:
 	(number[16]==1'b1) ? 5'b00110:
 	(number[15]==1'b1) ? 5'b00111:
@@ -54,9 +54,10 @@ assign u =
 // 左シフトするのは、それ以外の時で、uの数ぶんシフト
 	
 assign number_shiftl = number << u;
-assign temp = (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : {fugo[0:0], (e - {3'b000, u} ), number_shiftl[23:1]};
+assign temp = (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : 
+		(e >= {3'b000, u}) ? {fugo[0:0], (e - {3'b000, u} ), number_shiftl[23:1]} : 
+		{fugo[0:0], (8'b00000000), number_shiftl[23:1]};
 
-// e-uが、e:8bit u:5bitなのでこのまま引き算していいのか不安
 
 // 最終的にはこういう感じでresに代入する
 assign res = temp;
