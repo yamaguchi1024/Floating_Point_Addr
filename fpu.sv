@@ -158,7 +158,7 @@ wire [25:0] Small3;
 
 // 負の数ならば補数に変換
 assign Large3 = (Large_sign==1'b1) ? ~Large2 + 1'b1 : Large2;
-assign Small3 = (Small_sign==1'b1) ? (~Small2[300:275]) + 1'b1 : Small2[300:275];
+assign Small3 = (Small_sign==1'b1) ? (~shiftedS[300:275]) + 1'b1 : shiftedS[300:275];
 
 
 add add(.Large_n(Large3), .Small_n(Small3), .bit_r(oror) .e(Large_e) .res(res) )
