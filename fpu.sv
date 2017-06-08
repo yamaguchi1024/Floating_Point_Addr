@@ -169,7 +169,7 @@ endmodule
 
 
 // Main
-module fadd(
+module compare(
 	input [31:0] a,
 	input [31:0] b,
 	output [31:0] res,
@@ -234,5 +234,47 @@ assign Small_e =
     b[30:23];
 
 calladd calladd( .Large(Large), .Small(Small), .Large_sign(Large_sign), .Small_sign(Small_sign), .Shift_n(Shift_n), .res(res), .ovf(ovf), .Large_e(Large_e), .Small_e(Small_e) );
+
+endmodule
+
+module is_NaN(
+	input [31:0] a,
+        input [31:0] b,
+        output isNaN
+);
+
+assign isNaN = (a[30:23] == 8'b11111111)||(b[30:23] == 8'b11111111) ? 1'b1 : 1'b0;
+
+endmodule
+
+module when_NaN(
+	input [31:0] a,
+        input [31:0] b,
+        output [31:0] res,
+	output ovf
+);
+
+assign ovf = 1'b0;
+assign res = |b[22:0] != 0 ? 
+
+endmodule
+
+module fadd(
+	input [31:0] a,
+        input [31:0] b,
+        output [31:0] res,
+    	output ovf
+);
+
+wire isNaN;
+wire [31;0] res_N;
+wire ovf_N;
+
+is_NaN is_NaN( .a(a), .b(b), .isNaN(isNaN));
+compare compare( .a(a), .b(b), .res(res_N), .ovf(ovf_N));
+when_NaN when_NaN( .a(a), .b(b), .res(res_NaN), .ovf(ovf_NaN));
+
+assign res = isNaN ? res_NaN : res_N;
+assign ovf = isNaN ? ovf_NaN : ovf_N;
 
 endmodule
