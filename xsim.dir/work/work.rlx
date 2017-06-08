@@ -2,5 +2,6 @@
 2016.4
 Jan 23 2017
 19:19:20
-/home/yamaguchi/Floating_Point_Addr/fpu.sv,1496900957,systemVerilog,,,,add;calladd;fadd;normalize,,,,,,,,
-/home/yamaguchi/Floating_Point_Addr/test_fadd.sv,1496039188,systemVerilog,,/home/yamaguchi/Floating_Point_Addr/fpu.sv,,test_fadd,,,,,,,,
+/home/yamaguchi/Floating_Point_Addr/fpu.sv,1496901695,systemVerilog,,,,add;calladd;fadd;normalize,,,,,,,,
+/home/yamaguchi/Floating_Point_Addr/test_addone.sv,1496902208,systemVerilog,,/home/yamaguchi/Floating_Point_Addr/fpu.sv,,test_faddone,,,,,,,,
+/home/yamaguchi/Floating_Point_Addr/test_fadd.sv,1496902617,systemVerilog,,/home/yamaguchi/Floating_Point_Addr/fpu.sv,,test_fadd,,,,,,,,

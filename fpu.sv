@@ -119,7 +119,6 @@ assign sum_rnd=	//(ulps == 4'b0000) ? sum[26:2]:
 		(ulps == 4'b1111) ? sum[26:2]-1:
 		sum[26:2];
 
-//
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
 //正規化はまだ考えていない by 盛
 normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res), .ovf(ovf) );
