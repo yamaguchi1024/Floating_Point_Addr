@@ -158,10 +158,9 @@ wire [25:0] lar;
 wire [25:0] sma;
 
 // 負の数ならば補数に変換
-always @(L or S or la or shiftsm) begin
-	assign lar = (L==1'b1) ? ~la + 1'b1 : la;
-	assign sma = (S==1'b1) ? (~sm[300:275]) + 1'b1 : sm[300:275];
-end
+assign lar = (L==1'b1) ? ~la + 1'b1 : la;
+assign sma = (S==1'b1) ? (~sm[300:275]) + 1'b1 : sm[300:275];
+
 
 add add(.Large_n(lar), .Small_n(sma), .bit_r(oror) .e(e) .res(res) )
 
