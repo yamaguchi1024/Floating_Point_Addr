@@ -130,9 +130,6 @@ assign sum_rnd=	//(ulps == 2'b0000) ? sum[26:2]:
 		(ulps == 2'b0111) ? sum[26:2]-1:
 		(ulps == 2'b1111) ? sum[26:2]-1:
 		sum[26:2];
-	endcase
-end
-
 
 //
 // outputは、足し算した結果を25bitにまるめたもの。しかし、正規化や2進に治すことはしなくていい
