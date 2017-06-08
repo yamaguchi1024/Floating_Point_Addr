@@ -76,7 +76,7 @@ module test_fadd();
                         #1;
 
                         if (y !== fybit) begin
-                           $display("x1, x2 = %b %b\n", x1, x2);
+                           $display("x1, x2 = %b %b\nx1, x2 = %e %e\n", x1, x2, $bitstoshortreal(x1), $bitstoshortreal(x2) );
                            $display("%e %b\n", fy, $shortrealtobits(fy));
                            $display("%e %b\n", $bitstoshortreal(y), y);
                         end
