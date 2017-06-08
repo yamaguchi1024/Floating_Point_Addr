@@ -136,8 +136,8 @@ assign sum_rnd=	//(ulps == 2'b0000) ? sum[26:2]:
 //正規化はまだ考えていない by 盛
 normalize normalize( .sum_rnd(sum_rnd), .e(e), .res(res) );
 
-
 endmodule
+
 
 // 阪本くん担当
 module calladd(
