@@ -1,0 +1,13 @@
+#-----------------------------------------------------------
+# xsim v2016.4 (64-bit)
+# SW Build 1756540 on Mon Jan 23 19:11:19 MST 2017
+# IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
+# Start of session at: Thu Jun  8 16:17:17 2017
+# Process ID: 1993
+# Current directory: /home/yamaguchi/Floating_Point_Addr
+# Command line: xsim -mode tcl -source {xsim.dir/test_faddone.sim/xsim_script.tcl}
+# Log file: /home/yamaguchi/Floating_Point_Addr/xsim.log
+# Journal file: /home/yamaguchi/Floating_Point_Addr/xsim.jou
+#-----------------------------------------------------------
+source xsim.dir/test_faddone.sim/xsim_script.tcl
+run -all

@@ -20,11 +20,11 @@ initial begin
     // $dumpfile("test_fadd.vcd");
     // $dumpvars(0);
     s1[0] = 1'b0;
-    s2[0] = 1'b0;
+    s2[0] = 1'b1;
     i     = 8'd200;
-    j     = 8'd199;
+    j     = 8'd201;
     m1    = 23'd40;
-    m2    = 23'd39;
+    m2    = 23'd40;
     x1i = {s1[0],i[7:0],m1};
     x2i = {s2[0],j[7:0],m2};
     fx1 = $bitstoshortreal(x1i);

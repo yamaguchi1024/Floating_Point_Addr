@@ -54,10 +54,11 @@ assign u =
 // 右シフトするのは、number[23]が１のときで、1bit右シフト
 // 左シフトするのは、それ以外の時で、uの数ぶんシフト
 	
-assign number_shiftl = number << u;
-assign temp = (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : 
-		(e >= {3'b000, u}) ? {fugo[0:0], (e - {3'b000, u} ), number_shiftl[23:1]} : 
-		{fugo[0:0], (8'b00000000), number_shiftl[23:1]};
+assign number_shiftl = number << (u + 2) ;
+assign temp = 
+    (u == 5'b11111) ? {fugo[0:0], (e + 1'b1), number[23:1]} : 
+	(e >= {3'b000, u}) ? {fugo[0:0], (e - {3'b000, u} ), number_shiftl[23:1]} : 
+	{fugo[0:0], (8'b00000000), number_shiftl[23:1]};
 
 
 // 最終的にはこういう感じでresに代入する
