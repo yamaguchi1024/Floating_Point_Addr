@@ -168,12 +168,14 @@ assign sum = (Large_sign==Small_sign) ? Large_n+Small_n :
              Small_n-Large_n;
 
 wire Large_sign2;
+wire [7:0] e2;
 
 assign Large_sign2 = (Large_sign!=Small_sign)&&(Large_n == Small_n) ? 1'b0 : Large_sign;
+assign e2 = (Large_sign!=Small_sign)&&(Large_n == Small_n) ? 8'b00000000 : e;
 
 //add内でroundしない
 
-normalize normalize( .sum(sum), .e(e), .Large_sign(Large_sign2), .res(res), .ovf(ovf) );
+normalize normalize( .sum(sum), .e(e2), .Large_sign(Large_sign2), .res(res), .ovf(ovf) );
 endmodule
 
 
@@ -221,8 +223,6 @@ add add(.Large_n(Large3), .Small_n(Small3), .Large_sign(Large_sign), .Small_sign
 
 endmodule
 
-
-// Main
 module compare(
 	input [31:0] a,
 	input [31:0] b,
@@ -319,6 +319,7 @@ assign res = (|b[22:0] != 0)&&(b[30:23] == 8'b11111111)&&(|a[22:0] != 0)&&(a[30:
 
 endmodule
 
+//Main
 module fadd(
 	input [31:0] a,
         input [31:0] b,
