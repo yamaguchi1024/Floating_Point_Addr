@@ -1,16 +1,18 @@
 Vivado Simulator 2016.4
 Copyright 1986-1999, 2001-2016 Xilinx, Inc. All Rights Reserved.
-Running: /opt/Xilinx/Vivado/2016.4/bin/unwrapped/lnx64.o/xelab -debug typical test_faddone -s test_faddone.sim 
+Running: /opt/Xilinx/Vivado/2016.4/bin/unwrapped/lnx64.o/xelab -debug typical test_fadd -s test_fadd.sim 
 Multi-threading is on. Using 2 slave threads.
 Starting static elaboration
-WARNING: [VRFC 10-278] actual bit length 32 differs from formal bit length 8 for port Shift_n [/home/yamaguchi/Floating_Point_Addr/fpu.sv:236]
 Completed static elaboration
 Starting simulation data flow analysis
 Completed simulation data flow analysis
 Time Resolution for simulation is 100ps
+Compiling module work.is_NaN
 Compiling module work.normalize
 Compiling module work.add
 Compiling module work.calladd
+Compiling module work.compare
+Compiling module work.when_NaN
 Compiling module work.fadd
-Compiling module work.test_faddone
-Built simulation snapshot test_faddone.sim
+Compiling module work.test_fadd
+Built simulation snapshot test_fadd.sim

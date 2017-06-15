@@ -1,6 +1,6 @@
 //normalize
 module normalize(
-    input  [301:0] sum,
+    input  [60:0] sum,
     input  [7:0] e,
     input  Large_sign,
     output [31:0] res,
@@ -13,7 +13,7 @@ wire [4:0] u;
 wire [27:0] number;
 
 wire [23:0] number_rnd;
-wire [301:0] number_shift; 
+wire [60:0] number_shift; 
 wire [23:0] number_shiftl; 
 
 wire ulps;
@@ -25,7 +25,7 @@ wire [7:0] z_ae;
 // addから渡された値sumは符号を持たず、◯◯.・・・という形
 
 //符号・仮数をそのまま渡す
-assign number[27:0] = sum[301:274];
+assign number[27:0] = sum[60:33];
 assign fugo = Large_sign;
 
 assign u = 
@@ -75,17 +75,17 @@ assign z_ae = (u == 5'b11111) ? e+1 :
 assign number_shift = (u == 5'b11111) ? sum :
 					  (e==0)          ? sum<<1 :
 					  (z_ae==0)       ? sum<<e :
-		      　　　　　sum<<(u+1);
+		              sum << (u+1);
 
-//number_shiftl:24bit ◯.・・・
-assign number_shiftl = number_shift[301:278];
+//number_shiftl:24bit
+assign number_shiftl = number_shift[60:37];
 
 //ulps=g&&(r|s|u)
-//ulp=number_shift[278],guard=number_shift[277],round=number_shift[276]
-assign ulps = number_shift[277]&&(number_shift[276]|(|number_shift[275:0])|number_shift[278]);
+//ulp=number_shift[27],guard=number_shift[26],round=number_shift[26]
+assign ulps = number_shift[36]&&(number_shift[35]|(|number_shift[34:0])|number_shift[37]);
 
 //round
-//number_rnd:24bit ◯.・・・
+//number_rnd:24bit
 assign number_rnd = (ulps == 1'b1) ? number_shiftl[23:0]+1:number_shiftl[23:0]; 
 
 //最終のe
@@ -116,8 +116,8 @@ endmodule
 //sum => 結果
 //2の補数表示せず
 module add(
-	input  [300:0] Large_n,
-	input  [300:0] Small_n,
+	input  [59:0] Large_n,
+	input  [59:0] Small_n,
 	input  Large_sign,
 	input  Small_sign,
 	input  [7:0] e,
@@ -125,7 +125,7 @@ module add(
 	output ovf
 );
 
-wire [301:0] sum;
+wire [60:0] sum;
 //小数点位置　sum=◯◯.・・・
 assign sum = (Large_sign==Small_sign) ? Large_n+Small_n : 
              (Large_n>Small_n)        ? Large_n-Small_n :
@@ -155,17 +155,18 @@ module calladd(
 	output ovf
 );
 
-wire [300:0] Large2;
-wire [300:0] Small2;
+wire [59:0] Large2;
+wire [59:0] Small2;
 
 // 上下2bit拡張 上：正規・非正規分岐　下:ulp,guard追加
-assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],277'b0} : {1'b1,Large[22:0],277'b0};
-assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],277'b0} : {1'b1,Small[22:0],277'b0};
+assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],35'b0} : {1'b1,Large[22:0],35'b0};
+assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],35'b0} : {1'b1,Small[22:0],35'b0};
 
-wire [300:0] shiftedS;
+wire [59:0] shiftedS;
 wire [7:0] shift;
 
-assign shift = (Large_e == 0)&&(Small_e == 0) ? Shift_n :
+assign shift =  (Shift_n >= 35) ? {8'b00100011} :
+                (Large_e == 0)&&(Small_e == 0) ? Shift_n :
 				(Small_e == 0)                ? Shift_n-1 :
 				Shift_n;
 
