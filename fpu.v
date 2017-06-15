@@ -1,6 +1,6 @@
 //normalize
 module normalize(
-    input  [60:0] sum,
+    input  [50:0] sum,
     input  [7:0] e,
     input  Large_sign,
     output [31:0] res,
@@ -25,7 +25,7 @@ wire [7:0] z_ae;
 // addから渡された値sumは符号を持たず、◯◯.・・・という形
 
 //符号・仮数をそのまま渡す
-assign number[27:0] = sum[60:33];
+assign number[27:0] = sum[50:23];
 assign fugo = Large_sign;
 
 assign u = 
@@ -78,11 +78,11 @@ assign number_shift = (u == 5'b11111) ? sum :
 		              sum << (u+1);
 
 //number_shiftl:24bit
-assign number_shiftl = number_shift[60:37];
+assign number_shiftl = number_shift[50:27];
 
 //ulps=g&&(r|s|u)
-//ulp=number_shift[27],guard=number_shift[26],round=number_shift[26]
-assign ulps = number_shift[36]&&(number_shift[35]|(|number_shift[34:0])|number_shift[37]);
+//ulp=number_shift[27],guard=number_shift[26],round=number_shift[16]
+assign ulps = number_shift[26]&&(number_shift[25]|(|number_shift[24:0])|number_shift[27]);
 
 //round
 //number_rnd:24bit
@@ -116,8 +116,8 @@ endmodule
 //sum => 結果
 //2の補数表示せず
 module add(
-	input  [59:0] Large_n,
-	input  [59:0] Small_n,
+	input  [49:0] Large_n,
+	input  [49:0] Small_n,
 	input  Large_sign,
 	input  Small_sign,
 	input  [7:0] e,
@@ -125,7 +125,7 @@ module add(
 	output ovf
 );
 
-wire [60:0] sum;
+wire [50:0] sum;
 //小数点位置　sum=◯◯.・・・
 assign sum = (Large_sign==Small_sign) ? Large_n+Small_n : 
              (Large_n>Small_n)        ? Large_n-Small_n :
@@ -155,14 +155,14 @@ module calladd(
 	output ovf
 );
 
-wire [59:0] Large2;
-wire [59:0] Small2;
+wire [49:0] Large2;
+wire [49:0] Small2;
 
 // 上下2bit拡張 上：正規・非正規分岐　下:ulp,guard追加
-assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],36'b0} : {1'b1,Large[22:0],36'b0};
-assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],36'b0} : {1'b1,Small[22:0],36'b0};
+assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],26'b0} : {1'b1,Large[22:0],26'b0};
+assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],26'b0} : {1'b1,Small[22:0],26'b0};
 
-wire [59:0] shiftedS;
+wire [49:0] shiftedS;
 wire [7:0] shift;
 
 assign shift =  (Shift_n >= 35)&&(Small_e != 0) ? {8'b00100011} :
