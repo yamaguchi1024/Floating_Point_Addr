@@ -159,15 +159,15 @@ wire [59:0] Large2;
 wire [59:0] Small2;
 
 // 上下2bit拡張 上：正規・非正規分岐　下:ulp,guard追加
-assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],35'b0} : {1'b1,Large[22:0],35'b0};
-assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],35'b0} : {1'b1,Small[22:0],35'b0};
+assign Large2 = (|Large_e==1'b0) ? {1'b0,Large[22:0],36'b0} : {1'b1,Large[22:0],36'b0};
+assign Small2 = (|Small_e==1'b0) ? {1'b0,Small[22:0],36'b0} : {1'b1,Small[22:0],36'b0};
 
 wire [59:0] shiftedS;
 wire [7:0] shift;
 
-assign shift =  (Shift_n >= 35) ? {8'b00100011} :
+assign shift =  (Shift_n >= 35)&&(Small_e != 0) ? {8'b00100011} :
                 (Large_e == 0)&&(Small_e == 0) ? Shift_n :
-				(Small_e == 0)                ? Shift_n-1 :
+				(Small_e == 0)   ? Shift_n-1 :
 				Shift_n;
 
 // 小さい方をシフト
